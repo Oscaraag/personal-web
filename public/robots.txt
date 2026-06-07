@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://oscarangel.netlify.app/sitemap-index.xml
+Sitemap: https://oangel.dev/sitemap-index.xml

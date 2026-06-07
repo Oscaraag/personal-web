@@ -7,9 +7,8 @@ import sitemap from '@astrojs/sitemap';
 // the first interactive island (e.g. /arcade), `pnpm add` is already done — just
 // re-enable it here:  import react from '@astrojs/react';  integrations: [react(), sitemap()]
 
-// TODO: replace with the final custom domain once available.
-// Used for canonical URLs, sitemap and Open Graph absolute URLs.
-const SITE = 'https://oscarangel.netlify.app';
+// Production domain. Used for canonical URLs, sitemap and Open Graph absolute URLs.
+const SITE = 'https://oangel.dev';
 
 // https://astro.build/config
 export default defineConfig({

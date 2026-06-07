@@ -58,8 +58,11 @@ buscadores). Un script anti-flash en `<head>` fija `<html lang>` antes del prime
 
 Solo esas páginas cargarán JS de React; el portafolio base sigue en 0 KB de framework.
 
+## Despliegue
+
+Sitio estático en **Netlify** (`netlify.toml`: `pnpm build` → `dist/`). Dominio de producción:
+**https://oangel.dev** (configurado en `astro.config.mjs` y `public/robots.txt`).
+
 ## Pendientes
 
-- **Dominio**: `site` en `astro.config.mjs` y la URL del sitemap en `public/robots.txt` usan un
-  placeholder de Netlify — reemplazar por el dominio real.
 - **Instagram**: añadir el handle a `src/data/site.ts` (`socials`) y a los iconos sociales.
