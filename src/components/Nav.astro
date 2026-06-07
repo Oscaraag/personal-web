@@ -1,0 +1,37 @@
+---
+import { site } from '../data/site';
+---
+<header class="nav">
+  <a class="brand" href="#top" aria-label="Oscar Angel Gonzalez — inicio">
+    <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <circle cx="16" cy="16" r="5" fill="#ff5db1"></circle>
+      <g class="ring">
+        <ellipse cx="16" cy="16" rx="13" ry="5.5" stroke="#4dd0ff" stroke-width="1.6" transform="rotate(-24 16 16)"></ellipse>
+        <circle cx="28" cy="11" r="1.8" fill="#7b61ff"></circle>
+      </g>
+    </svg>
+    <span>OAG</span>
+  </a>
+
+  <nav class="nav-links" aria-label="Secciones">
+    <a href="#about" data-es="Sobre mí" data-en="About">Sobre mí</a>
+    <a href="#experience" data-es="Experiencia" data-en="Experience">Experiencia</a>
+    <a href="#stack" data-es="Stack" data-en="Stack">Stack</a>
+    <a href="#streams" data-es="Streams" data-en="Streams">Streams</a>
+    <a href="#contact" data-es="Contacto" data-en="Contact">Contacto</a>
+  </nav>
+
+  <div class="nav-right">
+    <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+      <button data-lang="es" class="active">ES</button>
+      <button data-lang="en">EN</button>
+    </div>
+    <a class="btn btn-cv" href={site.cv} download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      <span class="btn-cv-label" data-es="Descargar CV" data-en="Download CV">Descargar CV</span>
+    </a>
+    <button class="nav-burger" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>

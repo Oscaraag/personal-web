@@ -1,0 +1,57 @@
+---
+import T from './T.astro';
+---
+<section class="section" id="about">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">01 — <T as="span" es="Sobre mí" en="About" /></span>
+      <T
+        as="h2"
+        class="sec-title"
+        es="Ingeniería con los pies en la tierra"
+        en="Engineering with both feet on the ground"
+      />
+    </div>
+
+    <div class="about-grid">
+      <div class="about-body reveal d1">
+        <T
+          as="p"
+          es="Empecé como desarrollador front-end y fui creciendo de forma sostenida hasta liderar ingeniería: |b|Frontend Lead|/b|, |b|Tech Lead|/b| y hoy |b|Head of Engineering|/b| en ZeroQ. En el camino aprendí que liderar es, sobre todo, desbloquear a tu equipo."
+          en="I started as a front-end developer and grew steadily into engineering leadership: |b|Frontend Lead|/b|, |b|Tech Lead|/b| and now |b|Head of Engineering|/b| at ZeroQ. Along the way I learned that leading is, above all, unblocking your team."
+        />
+        <T
+          as="p"
+          es="Mi terreno son las aplicaciones web distribuidas de alta concurrencia: sistemas que procesan millones de transacciones al día para miles de sucursales, con JavaScript/TypeScript, React y Go sobre infraestructura cloud. Me mueven el rendimiento, las metodologías ágiles y el desarrollo guiado por pruebas."
+          en="My turf is high-concurrency distributed web apps: systems that process millions of transactions a day for thousands of branches, with JavaScript/TypeScript, React and Go on cloud infrastructure. I'm driven by performance, agile practices and test-driven development."
+        />
+        <T
+          as="p"
+          class="accent"
+          es="Fuera del trabajo: a veces enciendo el stream y programo en vivo."
+          en="Off the clock: sometimes I flip the stream on and code live."
+        />
+      </div>
+
+      <aside class="telemetry reveal d2">
+        <T as="h3" es="Telemetría" en="Telemetry" />
+        <div class="stat">
+          <div class="v">5+</div>
+          <T as="div" class="k" es="años de experiencia" en="years of experience" />
+        </div>
+        <div class="stat">
+          <T as="div" class="v" es="Millones" en="Millions" />
+          <T as="div" class="k" es="de transacciones / día" en="of transactions / day" />
+        </div>
+        <div class="stat">
+          <T as="div" class="v" es="Miles" en="Thousands" />
+          <T as="div" class="k" es="de sucursales atendidas" en="of branches served" />
+        </div>
+        <div class="stat">
+          <div class="v">5–10</div>
+          <T as="div" class="k" es="personas en mis equipos" en="people on my teams" />
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

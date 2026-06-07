@@ -1,0 +1,21 @@
+---
+/**
+ * Bilingual text node. Emits `data-es` / `data-en` (token form) and renders the
+ * Spanish version (default language) on the server. The client i18n toggle swaps
+ * `innerHTML` between languages at runtime. See src/scripts/i18n.ts.
+ */
+import { renderTokens } from '../lib/tokens';
+
+interface Props {
+  es: string;
+  en: string;
+  /** HTML tag to render. Defaults to <span>. */
+  as?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { es, en, as: Tag = 'span', ...rest } = Astro.props;
+---
+
+<Tag data-es={es} data-en={en} set:html={renderTokens(es)} {...rest} />

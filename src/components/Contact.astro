@@ -1,0 +1,35 @@
+---
+import { site } from '../data/site';
+import T from './T.astro';
+---
+<section class="section contact" id="contact">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num" style="justify-content:center">05 — <T as="span" es="Contacto" en="Contact" /></span>
+    </div>
+    <T as="h2" class="reveal d1" es="Abre un |g|canal|/g|" en="Open a |g|channel|/g|" />
+    <T
+      as="p"
+      class="reveal d1"
+      es="¿Un proyecto, una idea o solo saludar? La señal viaja rápido — escríbeme y respondo."
+      en="A project, an idea or just to say hi? The signal travels fast — write to me and I'll reply."
+    />
+    <a class="mail reveal d2" href={`mailto:${site.email}`}>{site.email}</a>
+
+    <div class="contact-actions reveal d2">
+      <a class="btn" href={site.socials.github} target="_blank" rel="noopener">GitHub</a>
+      <a class="btn" href={site.socials.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn" href={site.socials.twitch} target="_blank" rel="noopener">Twitch</a>
+      <a class="btn btn-primary" href={site.cv} download data-es="Descargar CV" data-en="Download CV">Descargar CV</a>
+    </div>
+
+    <footer class="footer">
+      <span data-es="© 2026 Oscar Angel Gonzalez · Hecho desde Venezuela 🛰" data-en="© 2026 Oscar Angel Gonzalez · Made from Venezuela 🛰">© 2026 Oscar Angel Gonzalez · Hecho desde Venezuela 🛰</span>
+      <div class="socials">
+        <a class="soc" href={site.socials.github} target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 1.7 2.7 1.2 3.4.9.1-.7.4-1.2.7-1.5-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.8 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .4.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"></path></svg></a>
+        <a class="soc" href={site.socials.twitch} target="_blank" rel="noopener" aria-label="Twitch"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.3 3 3 6.4v12.3h4.3V21h2.4l2.3-2.3h3.5l4.7-4.7V3H4.3zm15.1 10.2-2.7 2.7h-4.3l-2.3 2.3v-2.3H6.7V4.7h12.7v8.5zM16 7.3h-1.6v4.7H16V7.3zm-4.3 0h-1.6v4.7h1.6V7.3z"></path></svg></a>
+        <a class="soc" href={site.socials.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.74v20.51C0 23.22.8 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.75V1.74C24 .78 23.2 0 22.22 0z"></path></svg></a>
+      </div>
+    </footer>
+  </div>
+</section>

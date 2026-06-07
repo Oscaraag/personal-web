@@ -1,0 +1,37 @@
+---
+import { site } from '../data/site';
+import T from './T.astro';
+---
+<section class="section" id="streams">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">04 — <T as="span" es="Transmisión" en="Broadcast" /></span>
+      <T as="h2" class="sec-title" es="Código en vivo" en="Live coding" />
+    </div>
+
+    <div class="stream reveal d1">
+      <div class="stream-main">
+        <span class="onair">
+          <span class="led"></span>
+          <T as="span" es="A veces · en directo" en="Sometimes · live" />
+        </span>
+        <h3 data-es="@annatar_eru" data-en="@annatar_eru">@annatar_eru</h3>
+        <T
+          as="p"
+          es="De vez en cuando enciendo el stream y programo en vivo en Twitch: proyectos personales, experimentos y un poco de charla técnica relajada. Sin agenda fija — pásate cuando la luz esté encendida."
+          en="Every so often I flip the stream on and code live on Twitch: side projects, experiments and some relaxed technical chat. No fixed schedule — drop by whenever the light is on."
+        />
+        <a class="btn btn-primary" href={site.socials.twitch} target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:15px;height:15px"><path d="M4.3 3 3 6.4v12.3h4.3V21h2.4l2.3-2.3h3.5l4.7-4.7V3H4.3zm15.1 10.2-2.7 2.7h-4.3l-2.3 2.3v-2.3H6.7V4.7h12.7v8.5zM16 7.3h-1.6v4.7H16V7.3zm-4.3 0h-1.6v4.7h1.6V7.3z"></path></svg>
+          <T as="span" es="Ver en Twitch" en="Watch on Twitch" />
+        </a>
+      </div>
+      <div class="stream-visual" aria-hidden="true">
+        <div class="tv">
+          <svg class="play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+          <div class="scan"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

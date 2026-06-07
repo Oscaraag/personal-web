@@ -1,0 +1,91 @@
+---
+import '../styles/global.css';
+import { Font } from 'astro:assets';
+import { site } from '../data/site';
+import Cosmos from '../components/Cosmos.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: string;
+}
+
+const { title = site.title, description = site.description, lang = site.defaultLang } =
+  Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(site.ogImage, Astro.site).href;
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.role,
+  url: Astro.site?.href,
+  email: `mailto:${site.email}`,
+  sameAs: [site.socials.github, site.socials.linkedin, site.socials.twitch],
+  knowsAbout: site.knowsAbout,
+};
+
+// Orbit wordmark favicon — identical to the design prototype.
+const FAVICON =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='6' fill='%23ff5db1'/%3E%3Cellipse cx='16' cy='16' rx='13' ry='6' fill='none' stroke='%234dd0ff' stroke-width='1.5' transform='rotate(-22 16 16)'/%3E%3C/svg%3E";
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content={site.themeColor} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href={FAVICON} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Self-hosted fonts (woff2). Preload only the display family: the hero
+         H1 is the LCP element. Body/mono swap in with fallback metrics. -->
+    <Font cssVariable="--font-display" preload />
+    <Font cssVariable="--font-body" />
+    <Font cssVariable="--font-mono" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(personLd)} is:inline />
+
+    <!-- Anti-flash: apply stored language to <html lang> before first paint -->
+    <script is:inline>
+      (function () {
+        try {
+          var l = localStorage.getItem('oag-lang');
+          if (l) document.documentElement.lang = l;
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+
+  <body>
+    <Cosmos />
+    <slot />
+
+    <script>
+      import '../scripts/parallax.ts';
+      import '../scripts/ui.ts';
+      import '../scripts/i18n.ts';
+    </script>
+  </body>
+</html>

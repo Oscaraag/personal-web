@@ -1,0 +1,50 @@
+---
+import { experience } from '../data/experience';
+import T from './T.astro';
+---
+<section class="section" id="experience">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-num">02 — <T as="span" es="Bitácora" en="Logbook" /></span>
+      <T as="h2" class="sec-title" es="Bitácora de misión" en="Mission log" />
+      <T
+        as="p"
+        class="sec-sub"
+        es="Cinco etapas, una misma órbita: de escribir interfaces a dirigir el rumbo técnico."
+        en="Five stages, one orbit: from writing interfaces to steering the technical course."
+      />
+    </div>
+
+    <div class="timeline">
+      <div class="tl-line" aria-hidden="true"></div>
+
+      {
+        experience.map((item) => (
+          <article class:list={['tl-item', { current: item.current }, 'reveal']}>
+            <span class="tl-node" aria-hidden="true" />
+            <div class="tl-card">
+              <div class="tl-top">
+                <T as="h3" class="tl-role" es={item.role.es} en={item.role.en} />
+                <T as="span" class="tl-date" es={item.date.es} en={item.date.en} />
+              </div>
+              <p class="tl-org">
+                <T as="span" es={item.org.es} en={item.org.en} />
+                {item.badge && (
+                  <>
+                    {' '}
+                    <T as="span" class="badge" es={item.badge.es} en={item.badge.en} />
+                  </>
+                )}
+              </p>
+              <ul class="tl-bullets">
+                {item.bullets.map((b) => (
+                  <T as="li" es={b.es} en={b.en} />
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
