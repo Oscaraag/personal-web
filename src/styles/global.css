@@ -696,6 +696,18 @@ section { position: relative; }
     border-bottom: 1px solid var(--hair);
   }
   .hero { padding-top: 96px; }
+  /* On narrow viewports the copy spans the full width and sits over the sun.
+     Shrink/center the sun and deepen the scrim so it stops competing with the
+     text — z-index keeps the scrim (1) above the sun (0) and below the text (2). */
+  .sun {
+    left: 50%;
+    width: clamp(190px, 56vw, 280px);
+  }
+  .hero::before {
+    background:
+      radial-gradient(120% 70% at 50% 38%, rgba(7, 4, 15, 0.94) 0%, rgba(7, 4, 15, 0.6) 45%, transparent 78%),
+      linear-gradient(180deg, rgba(7, 4, 15, 0.55) 0%, rgba(7, 4, 15, 0.2) 40%, transparent 60%);
+  }
 }
 @media (max-width: 420px) {
   .hero-actions { gap: 10px; }
