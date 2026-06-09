@@ -8,10 +8,16 @@ interface Props {
   title?: string;
   description?: string;
   lang?: string;
+  /** Emit a noindex robots meta (for variant/preview pages). */
+  noindex?: boolean;
 }
 
-const { title = site.title, description = site.description, lang = site.defaultLang } =
-  Astro.props;
+const {
+  title = site.title,
+  description = site.description,
+  lang = site.defaultLang,
+  noindex = false,
+} = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(site.ogImage, Astro.site).href;
@@ -40,6 +46,7 @@ const FAVICON =
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
     <meta name="theme-color" content={site.themeColor} />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" href={FAVICON} />

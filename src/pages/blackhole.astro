@@ -1,0 +1,18 @@
+---
+// Hero variant preview: same page as the home, but with the WebGL black-hole
+// hero instead of the synthwave sun. noindex + excluded from the sitemap so it
+// doesn't duplicate the home in search. Swap into index.astro to promote it.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import HeroBlackHole from '../components/HeroBlackHole.astro';
+import MainSections from '../components/MainSections.astro';
+---
+
+<BaseLayout noindex>
+  <Nav />
+
+  <main class="shell" id="top">
+    <HeroBlackHole />
+    <MainSections />
+  </main>
+</BaseLayout>

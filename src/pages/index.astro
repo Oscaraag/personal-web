@@ -2,11 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
-import About from '../components/About.astro';
-import Experience from '../components/Experience.astro';
-import Stack from '../components/Stack.astro';
-import Streams from '../components/Streams.astro';
-import Contact from '../components/Contact.astro';
+import MainSections from '../components/MainSections.astro';
 ---
 
 <BaseLayout>
@@ -14,21 +10,6 @@ import Contact from '../components/Contact.astro';
 
   <main class="shell" id="top">
     <Hero />
-
-    <About />
-
-    <div class="wrap"><div class="divider"></div></div>
-
-    <Experience />
-
-    <div class="wrap"><div class="divider"></div></div>
-
-    <Stack />
-
-    <div class="wrap"><div class="divider"></div></div>
-
-    <Streams />
-
-    <Contact />
+    <MainSections />
   </main>
 </BaseLayout>

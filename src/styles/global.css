@@ -713,3 +713,40 @@ section { position: relative; }
   .hero-actions { gap: 10px; }
   .socials { flex-wrap: wrap; }
 }
+
+/* ============================================================
+   HERO VARIANT — black hole (WebGL, /blackhole)
+   Scoped under .hero--bh so the synthwave sun hero is untouched.
+   Layer order: canvas/fallback (bh-scene z0) < veil (.hero::before z1) < text (z2).
+   ============================================================ */
+.bh-scene { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.bh-canvas {
+  position: absolute; inset: 0; z-index: 1;
+  width: 100%; height: 100%; display: block;
+  /* fade into the section below */
+  -webkit-mask: linear-gradient(180deg, #000 72%, transparent 99%);
+          mask: linear-gradient(180deg, #000 72%, transparent 99%);
+}
+/* visible if WebGL is unavailable or prefers-reduced-motion hides the canvas */
+.bh-fallback {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(60% 60% at 72% 52%, rgba(255, 93, 177, 0.25), transparent 60%),
+    radial-gradient(40% 40% at 72% 52%, rgba(77, 208, 255, 0.22), transparent 55%),
+    var(--void);
+}
+/* legibility veil — overrides the sun-hero scrim via higher specificity
+   (.hero.hero--bh::before > .hero::before); inherits content/inset/z-index from it */
+.hero.hero--bh::before {
+  background:
+    linear-gradient(95deg, rgba(7, 4, 15, 0.96) 0%, rgba(7, 4, 15, 0.85) 28%, rgba(7, 4, 15, 0.45) 52%, transparent 72%),
+    radial-gradient(70% 90% at 20% 50%, rgba(7, 4, 15, 0.7) 0%, transparent 70%);
+}
+@media (max-width: 720px) {
+  .hero.hero--bh::before {
+    background: linear-gradient(180deg, rgba(7, 4, 15, 0.55) 0%, rgba(7, 4, 15, 0.8) 55%, rgba(7, 4, 15, 0.95) 100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bh-canvas { display: none; }
+}
