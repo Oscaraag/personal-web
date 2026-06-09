@@ -244,92 +244,18 @@ img, svg { display: block; }
   overflow: hidden;
   padding-top: 80px;
 }
-/* Full-bleed legibility scrim: darkens the background behind the text block and
-   fades to transparent before any edge, so there's never a hard rectangle.
-   Sits above the decorative scene (z-index 0) and below the text (z-index 2). */
+/* Full-bleed legibility veil for the WebGL black-hole hero: darkens the left
+   (text) side and fades to transparent over the black hole on the right, with no
+   hard edge. Sits above the canvas (z-index 0) and below the text (z-index 2). */
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(
-    78% 82% at 27% 48%,
-    rgba(7, 4, 15, 0.92) 0%,
-    rgba(7, 4, 15, 0.5) 40%,
-    transparent 70%
-  );
-}
-
-/* synthwave sun + horizon grid, parallax-driven */
-.hero-scene {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-.sun {
-  position: absolute;
-  left: 73%;
-  bottom: calc(var(--horizonY) - 22px);
-  width: clamp(230px, 30vw, 430px);
-  aspect-ratio: 1;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: linear-gradient(180deg, var(--amber) 0%, var(--pink) 46%, var(--violet) 100%);
-  filter: blur(0.3px);
-  will-change: transform;
-}
-.sun::before {
-  /* horizontal slits across the lower half */
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0 22px,
-    var(--space) 22px 28px
-  );
-  -webkit-mask: radial-gradient(circle, #000 60%, transparent 71%);
-          mask: radial-gradient(circle, #000 60%, transparent 71%);
-  clip-path: inset(46% 0 0 0);
-}
-.sun::after {
-  content: '';
-  position: absolute;
-  inset: -18%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,93,177,.45), transparent 62%);
-  filter: blur(26px);
-  z-index: -1;
-}
-.horizon {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  width: 260vw;
-  height: var(--horizonY);
-  transform: translateX(-50%) perspective(360px) rotateX(74deg);
-  transform-origin: bottom center;
-  background-image:
-    linear-gradient(var(--hair-strong) 1px, transparent 1px),
-    linear-gradient(90deg, var(--hair-strong) 1px, transparent 1px);
-  background-size: 6% 40px;
-  -webkit-mask: linear-gradient(180deg, transparent, #000 55%);
-          mask: linear-gradient(180deg, transparent, #000 55%);
-  opacity: .85;
-  will-change: transform;
-}
-.horizon-line {
-  position: absolute;
-  left: 0; right: 0;
-  bottom: var(--horizonY);
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--cyan) 30%, var(--pink) 70%, transparent);
-  box-shadow: 0 0 22px rgba(77,208,255,.55);
-  opacity: .9;
+  background:
+    linear-gradient(95deg, rgba(7, 4, 15, 0.96) 0%, rgba(7, 4, 15, 0.85) 28%, rgba(7, 4, 15, 0.45) 52%, transparent 72%),
+    radial-gradient(70% 90% at 20% 50%, rgba(7, 4, 15, 0.7) 0%, transparent 70%);
 }
 
 .hero-inner {
@@ -696,17 +622,15 @@ section { position: relative; }
     border-bottom: 1px solid var(--hair);
   }
   .hero { padding-top: 96px; }
-  /* On narrow viewports the copy spans the full width and sits over the sun.
-     Shrink/center the sun and deepen the scrim so it stops competing with the
-     text — z-index keeps the scrim (1) above the sun (0) and below the text (2). */
-  .sun {
-    left: 50%;
-    width: clamp(190px, 56vw, 280px);
-  }
+  /* The copy is centered over the black hole here. Darken only the top (name) and
+     bottom (CTA); keep the middle light so the accretion disk shows through. */
   .hero::before {
-    background:
-      radial-gradient(120% 70% at 50% 38%, rgba(7, 4, 15, 0.94) 0%, rgba(7, 4, 15, 0.6) 45%, transparent 78%),
-      linear-gradient(180deg, rgba(7, 4, 15, 0.55) 0%, rgba(7, 4, 15, 0.2) 40%, transparent 60%);
+    background: linear-gradient(180deg,
+      rgba(7, 4, 15, 0.85) 0%,
+      rgba(7, 4, 15, 0.48) 22%,
+      rgba(7, 4, 15, 0.16) 50%,
+      rgba(7, 4, 15, 0.48) 78%,
+      rgba(7, 4, 15, 0.85) 100%);
   }
 }
 @media (max-width: 420px) {
@@ -715,8 +639,7 @@ section { position: relative; }
 }
 
 /* ============================================================
-   HERO VARIANT — black hole (WebGL, /blackhole)
-   Scoped under .hero--bh so the synthwave sun hero is untouched.
+   Black-hole hero scene (WebGL canvas + static fallback)
    Layer order: canvas/fallback (bh-scene z0) < veil (.hero::before z1) < text (z2).
    ============================================================ */
 .bh-scene { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
@@ -734,18 +657,6 @@ section { position: relative; }
     radial-gradient(60% 60% at 72% 52%, rgba(255, 93, 177, 0.25), transparent 60%),
     radial-gradient(40% 40% at 72% 52%, rgba(77, 208, 255, 0.22), transparent 55%),
     var(--void);
-}
-/* legibility veil — overrides the sun-hero scrim via higher specificity
-   (.hero.hero--bh::before > .hero::before); inherits content/inset/z-index from it */
-.hero.hero--bh::before {
-  background:
-    linear-gradient(95deg, rgba(7, 4, 15, 0.96) 0%, rgba(7, 4, 15, 0.85) 28%, rgba(7, 4, 15, 0.45) 52%, transparent 72%),
-    radial-gradient(70% 90% at 20% 50%, rgba(7, 4, 15, 0.7) 0%, transparent 70%);
-}
-@media (max-width: 720px) {
-  .hero.hero--bh::before {
-    background: linear-gradient(180deg, rgba(7, 4, 15, 0.55) 0%, rgba(7, 4, 15, 0.8) 55%, rgba(7, 4, 15, 0.95) 100%);
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   .bh-canvas { display: none; }

@@ -9,15 +9,9 @@ const SITE = 'https://oangel.dev';
 // https://astro.build/config
 export default defineConfig({
   site: SITE,
-  // React powers interactive islands (e.g. the WebGL black-hole hero). The base
-  // portfolio uses no islands, so index.html still ships zero framework JS — React
-  // only loads on pages that mount an island.
-  integrations: [
-    react(),
-    // `/blackhole` is a hero variant that duplicates the home content — keep it out
-    // of the sitemap (it's also noindex) to avoid duplicate-content signals.
-    sitemap({ filter: (page) => !page.includes('/blackhole') }),
-  ],
+  // React powers the interactive islands (the WebGL black-hole hero on the home,
+  // and future ones). Pages without an island still ship zero framework JS.
+  integrations: [react(), sitemap()],
   // `prefetch` is omitted on purpose: the one-page base has no internal page
   // navigation (only hash anchors), so it would just ship idle JS. Re-enable it
   // when /arcade, /escape, … land:  prefetch: { defaultStrategy: 'hover', prefetchAll: true }

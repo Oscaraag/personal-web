@@ -1,10 +1,10 @@
 ---
-// Hero variant: a WebGL black hole (gravitational lensing + neon accretion disk)
-// rendered by a client-only React island. Same copy as the sun hero (HeroContent).
+// Home hero: a WebGL black hole (gravitational lensing + neon accretion disk)
+// rendered by a client-only React island. Shares the copy with HeroContent.
 import HeroContent from './HeroContent.astro';
 import BlackHoleHero from '../islands/BlackHoleHero.tsx';
 ---
-<section class="hero hero--bh" id="hero">
+<section class="hero" id="hero">
   <div class="bh-scene" aria-hidden="true">
     <div class="bh-fallback"></div>
     <BlackHoleHero client:only="react" />
