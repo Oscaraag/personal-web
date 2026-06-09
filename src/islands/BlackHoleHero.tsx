@@ -64,9 +64,9 @@ void main(){
   vec2 suv = uv - vec2(off, 0.0);
 
   // órbita de cámara (leve: mouse + scroll)
-  float az = 0.55 + iMouse.x*0.28;
-  float el = 0.30 + iMouse.y*0.10 + iScroll*0.26;
-  el = clamp(el, 0.10, 0.66);
+  float az = 0.55 + iMouse.x*0.22;
+  float el = 0.085 + iMouse.y*0.05 + iScroll*0.13;
+  el = clamp(el, 0.045, 0.40);
   float dist = 19.0;
   vec3 eye = vec3(sin(az)*cos(el), sin(el), cos(az)*cos(el))*dist;
   mat3 cam = lookAt(eye, vec3(0.0), vec3(0.0,1.0,0.0));
@@ -80,7 +80,7 @@ void main(){
   bool captured = false;
 
   const float STEP = 0.115;
-  float inner = 2.6, outer = 9.5;
+  float inner = 2.75, outer = 9.5;
   for(int i=0;i<320;i++){
     vec3 accel = -1.5 * h2 * pos / pow(dot(pos,pos), 2.5); // curvatura geodésica
     vec3 ndir = dir + accel*STEP;
@@ -94,16 +94,16 @@ void main(){
       if(rr>inner && rr<outer){
         float t = (rr-inner)/(outer-inner);
         float ang = atan(hp.z,hp.x);
-        float spd = 2.2/pow(rr,0.85);
+        float spd = 3.4/pow(rr,0.85);
         float sw = ang*1.0 - iTime*spd;
-        float band = fbm(vec2(sw*1.6, rr*0.9 - iTime*0.4));
+        float band = fbm(vec2(sw*1.6, rr*0.9 - iTime*0.7));
         float fil  = 0.45 + 0.55*fbm(vec2(sw*4.5, rr*2.2));
         float dens = mix(0.35,1.25, band) * fil;
         vec3 orb = normalize(vec3(-hp.z, 0.0, hp.x));
         float dopp = dot(orb, normalize(eye-hp));       // doppler beaming
         float beam = pow(clamp(0.5+0.5*dopp,0.0,1.0), 1.6)*1.8 + 0.25;
         float bright = (smoothstep(1.0,0.0,t)*1.5 + 0.4);
-        float edge = smoothstep(0.0,0.07,t) * smoothstep(1.0,0.82,t);
+        float edge = smoothstep(0.0,0.26,t) * smoothstep(1.0,0.82,t);
         vec3 dc = diskColor(t) * bright * dens * beam * edge * 1.7;
         color += dc * transmit;
         transmit *= mix(0.34, 0.66, t);
