@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # Netlify CLI local state
 .netlify/
+
+# Local screenshots dropped into the project root (e.g. design feedback)
+/*.png

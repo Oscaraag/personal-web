@@ -622,15 +622,22 @@ section { position: relative; }
     border-bottom: 1px solid var(--hair);
   }
   .hero { padding-top: 96px; }
-  /* The copy is centered over the black hole here. Darken only the top (name) and
-     bottom (CTA); keep the middle light so the accretion disk shows through. */
+  /* The copy is centered over the black hole here. Keep the veil light enough to
+     show the accretion disk, but give the text its own dark halo so the bright
+     (white) part of the disk can't wash out the letters. */
   .hero::before {
     background: linear-gradient(180deg,
       rgba(7, 4, 15, 0.85) 0%,
-      rgba(7, 4, 15, 0.48) 22%,
-      rgba(7, 4, 15, 0.16) 50%,
-      rgba(7, 4, 15, 0.48) 78%,
+      rgba(7, 4, 15, 0.5) 24%,
+      rgba(7, 4, 15, 0.24) 50%,
+      rgba(7, 4, 15, 0.5) 78%,
       rgba(7, 4, 15, 0.85) 100%);
+  }
+  .hero-tele,
+  .hero h1,
+  .hero-role,
+  .hero-lead {
+    text-shadow: 0 2px 4px rgba(7, 4, 15, 0.95), 0 0 20px rgba(7, 4, 15, 0.88);
   }
 }
 @media (max-width: 420px) {
