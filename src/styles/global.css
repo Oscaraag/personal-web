@@ -474,41 +474,6 @@ section { position: relative; }
 }
 
 /* ============================================================
-   STACK
-   ============================================================ */
-.stack-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 18px;
-}
-.stack-card {
-  border: 1px solid var(--hair);
-  border-radius: 14px;
-  background: var(--panel);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  padding: 24px;
-  transition: border-color .25s, transform .25s;
-}
-.stack-card:hover { border-color: var(--hair-strong); transform: translateY(-3px); }
-.stack-card .ico { width: 38px; height: 38px; margin-bottom: 16px; color: var(--cyan); }
-.stack-card .ico svg { width: 100%; height: 100%; }
-.stack-card h3 {
-  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--bone-dim); margin-bottom: 14px;
-}
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip {
-  font-family: var(--mono); font-size: 0.76rem;
-  padding: 6px 12px; border-radius: 8px;
-  border: 1px solid var(--hair-strong);
-  color: var(--bone);
-  background: rgba(123,97,255,.07);
-  transition: .2s;
-}
-.chip:hover { color: #fff; border-color: var(--cyan); box-shadow: var(--glow-cyan); }
-
-/* ============================================================
    STREAMS (Twitch)
    ============================================================ */
 .stream {
