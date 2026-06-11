@@ -17,6 +17,9 @@ importers:
       astro:
         specifier: ^6.4.4
         version: 6.4.4(@types/node@24.13.1)(rollup@4.61.1)(yaml@2.9.0)
+      postprocessing:
+        specifier: ^6.39.1
+        version: 6.39.1(three@0.184.0)
       react:
         specifier: ^19.2.7
         version: 19.2.7
@@ -1477,6 +1480,11 @@ packages:
   postcss@8.5.15:
     resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
     engines: {node: ^10 || ^12 || >=14}
+
+  postprocessing@6.39.1:
+    resolution: {integrity: sha512-R2dG2zy+BAx3USl5EHw+PvnrlbT5PKnZVp3se0HCR0pWH8WQdh742yNG4YWOsq6c0bFpffk0Gd2RqPeoP/wKng==}
+    peerDependencies:
+      three: '>= 0.168.0 < 0.185.0'
 
   prettier@3.8.3:
     resolution: {integrity: sha512-7igPTM53cGHMW8xWuVTydi2KO233VFiTNyF5hLJqpilHfmn8C8gPf+PS7dUT64YcXFbiMGZxS9pCSxL/Dxm/Jw==}
@@ -3671,6 +3679,10 @@ snapshots:
       nanoid: 3.3.12
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  postprocessing@6.39.1(three@0.184.0):
+    dependencies:
+      three: 0.184.0
 
   prettier@3.8.3: {}
 

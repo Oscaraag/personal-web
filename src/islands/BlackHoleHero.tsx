@@ -1,8 +1,24 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import {
+  BlendFunction,
+  BloomEffect,
+  ChromaticAberrationEffect,
+  EffectComposer,
+  EffectPass,
+  NoiseEffect,
+  RenderPass,
+  ToneMappingEffect,
+  ToneMappingMode,
+} from 'postprocessing';
 
 const VERT = `void main(){ gl_Position = vec4(position, 1.0); }`;
 
+// Geodesic raytracer in Schwarzschild spacetime (geometric units, rs = 1):
+// horizon r=1, photon sphere r=1.5, ISCO r=3. The disk is volumetric and
+// emits as a blackbody following a Novikov-Thorne temperature profile,
+// observed through full relativistic Doppler (delta^4 beaming) plus
+// gravitational redshift. Output is linear HDR; bloom + ACES happen in post.
 const FRAG = `
 precision highp float;
 uniform vec2 iResolution;
@@ -18,6 +34,18 @@ float vnoise(vec2 p){
   return mix(mix(a,b,f.x), mix(c,d,f.x), f.y);
 }
 float fbm(vec2 p){ float v=0.0,a=0.5; for(int i=0;i<5;i++){ v+=a*vnoise(p); p*=2.03; a*=0.5; } return v; }
+float fbm4(vec2 p){ float v=0.0,a=0.5; for(int i=0;i<4;i++){ v+=a*vnoise(p); p*=2.13; a*=0.5; } return v; }
+
+// Planckian locus approximation: temperature in Kelvin -> normalized RGB.
+vec3 blackbody(float T){
+  vec3 c;
+  c.r = 56100000.0*pow(T,-1.5) + 148.0;
+  c.g = T > 6500.0 ? 35200000.0*pow(T,-1.5) + 184.0 : 100.04*log(T) - 623.6;
+  c.b = 194.18*log(T) - 1448.6;
+  c = clamp(c, 0.0, 255.0)/255.0;
+  if(T < 1000.0) c *= T/1000.0;
+  return c;
+}
 
 vec3 starField(vec3 dir){
   vec2 uv = vec2(atan(dir.z,dir.x), asin(clamp(dir.y,-1.0,1.0)));
@@ -37,24 +65,18 @@ vec3 starField(vec3 dir){
   float n = fbm(uv*2.5 + 4.0);
   vec3 neb = mix(vec3(0.04,0.02,0.10), vec3(0.10,0.04,0.16), n);
   neb += vec3(0.02,0.05,0.12)*fbm(uv*1.3 - 2.0);
-  col += neb*0.5;
+  col += neb*0.4;
   return col;
-}
-
-vec3 diskColor(float t){
-  vec3 c1=vec3(2.4,2.6,3.0); // hot white-cyan
-  vec3 c2=vec3(0.5,1.6,3.0); // cyan  #4dd0ff
-  vec3 c3=vec3(1.1,0.7,3.0); // violet #7b61ff
-  vec3 c4=vec3(3.0,0.8,1.7); // pink  #ff5db1
-  if(t<0.30) return mix(c1,c2,t/0.30);
-  if(t<0.62) return mix(c2,c3,(t-0.30)/0.32);
-  return mix(c3,c4,(t-0.62)/0.38);
 }
 
 mat3 lookAt(vec3 eye, vec3 tgt, vec3 up){
   vec3 f=normalize(tgt-eye); vec3 r=normalize(cross(f,up)); vec3 u=cross(r,f);
   return mat3(r,u,f);
 }
+
+const float R_IN   = 3.0;    // ISCO
+const float R_OUT  = 10.0;
+const float T_PEAK = 6200.0; // Kelvin at the Novikov-Thorne peak (~1.36 * R_IN)
 
 void main(){
   vec2 uv = (gl_FragCoord.xy - 0.5*iResolution.xy)/iResolution.y;
@@ -65,7 +87,7 @@ void main(){
 
   // órbita de cámara (leve: mouse + scroll)
   float az = 0.55 + iMouse.x*0.22;
-  float el = 0.085 + iMouse.y*0.05 + iScroll*0.13;
+  float el = 0.11 + iMouse.y*0.05 + iScroll*0.13;
   el = clamp(el, 0.045, 0.40);
   float dist = 19.0;
   vec3 eye = vec3(sin(az)*cos(el), sin(el), cos(az)*cos(el))*dist;
@@ -75,52 +97,73 @@ void main(){
 
   float h2 = pow(length(cross(pos,dir)), 2.0); // momento angular^2 conservado
 
-  vec3 color = vec3(0.0);
+  vec3 col = vec3(0.0);
   float transmit = 1.0;
   bool captured = false;
 
-  const float STEP = 0.115;
-  float inner = 2.75, outer = 9.5;
-  for(int i=0;i<320;i++){
-    vec3 accel = -1.5 * h2 * pos / pow(dot(pos,pos), 2.5); // curvatura geodésica
-    vec3 ndir = dir + accel*STEP;
-    vec3 npos = pos + dir*STEP;
-    float r = length(npos);
-    if(r < 1.0){ captured = true; break; }          // horizonte de eventos
-    if(pos.y*npos.y < 0.0){                          // cruce del disco (plano y=0)
-      float tc = pos.y/(pos.y-npos.y);
-      vec3 hp = mix(pos,npos,tc);
-      float rr = length(hp.xz);
-      if(rr>inner && rr<outer){
-        float t = (rr-inner)/(outer-inner);
-        float ang = atan(hp.z,hp.x);
-        float spd = 3.4/pow(rr,0.85);
-        float sw = ang*1.0 - iTime*spd;
-        float band = fbm(vec2(sw*1.6, rr*0.9 - iTime*0.7));
-        float fil  = 0.45 + 0.55*fbm(vec2(sw*4.5, rr*2.2));
-        float dens = mix(0.35,1.25, band) * fil;
-        vec3 orb = normalize(vec3(-hp.z, 0.0, hp.x));
-        float dopp = dot(orb, normalize(eye-hp));       // doppler beaming
-        float beam = pow(clamp(0.5+0.5*dopp,0.0,1.0), 1.6)*1.8 + 0.25;
-        float bright = (smoothstep(1.0,0.0,t)*1.5 + 0.4);
-        float edge = smoothstep(0.0,0.26,t) * smoothstep(1.0,0.82,t);
-        vec3 dc = diskColor(t) * bright * dens * beam * edge * 1.7;
-        color += dc * transmit;
-        transmit *= mix(0.34, 0.66, t);
+  for(int i=0;i<STEPS;i++){
+    float r = length(pos);
+    if(r < 1.0){ captured = true; break; }
+    if(r > 46.0 && dot(pos,dir) > 0.0) break; // escapó al cielo
+
+    float rr = length(pos.xz);
+    bool nearDisk = rr > R_IN-1.1 && rr < R_OUT+0.8 && abs(pos.y) < 0.6;
+    // adaptive step: fine inside the disk slab and near the photon sphere
+    float dt = nearDisk ? 0.065 : clamp(0.09*r, 0.05, 0.45);
+    if(r < 3.0) dt = min(dt, 0.05);
+
+    vec3 accel = -1.5 * h2 * pos / pow(dot(pos,pos), 2.5); // null geodesic bending
+    dir += accel*dt;
+    pos += dir*dt;
+
+    if(nearDisk){
+      // flared scale height + gaussian vertical density
+      float H = 0.07 + 0.17*smoothstep(R_IN, R_OUT, rr);
+      float vert = exp(-(pos.y*pos.y)/(2.0*H*H));
+      // Keplerian differential rotation shears the noise into spiral wisps;
+      // sampling on a rotating polar frame keeps it seamless in angle
+      float ang = atan(pos.z, pos.x);
+      float phase = ang - 2.4*pow(max(rr,1.0), -1.5)*iTime;
+      vec2 pc = rr*vec2(cos(phase), sin(phase));
+      float n1 = fbm(pc*0.85);
+      float n2 = fbm4(pc*2.6 + n1*1.7);
+      // thresholded noise -> distinct filaments and gaps instead of uniform fog
+      float n = n1*0.62 + n2*0.55;
+      float dens = vert * pow(max(n - 0.28, 0.0)*2.2, 2.0) * 2.6;
+      dens *= smoothstep(R_IN-0.25, R_IN+0.6, rr);   // sharp ISCO inner edge
+      dens *= smoothstep(R_OUT, R_OUT-2.8, rr);
+      dens *= pow(R_IN/rr, 1.8);                     // surface density falloff
+
+      if(dens > 1e-3){
+        // Novikov-Thorne: T ~ r^-3/4 (1 - sqrt(r_in/r))^1/4, normalized to peak
+        float Temit = T_PEAK * 4.515 * pow(rr, -0.75) * pow(max(1.0 - sqrt(2.85/rr), 0.0), 0.25);
+        // Keplerian speed seen by a static observer: beta = sqrt(M/(r-2M)), rs=1
+        float beta = clamp(sqrt(0.5/max(rr-1.0, 0.7)), 0.0, 0.85);
+        float gma = 1.0/sqrt(1.0 - beta*beta);
+        vec3 orb = normalize(vec3(-pos.z, 0.0, pos.x));
+        float cosT = dot(orb, -normalize(dir));        // photon direction to observer
+        float dopp = 1.0/(gma*(1.0 - beta*cosT));      // relativistic Doppler
+        float grav = sqrt(max(1.0 - 1.0/r, 0.03));     // gravitational redshift
+        float s = dopp*grav;
+        // I/nu^3 is Lorentz invariant -> bolometric intensity scales as s^4
+        vec3 emis = blackbody(Temit*s) * pow(s, 4.0);
+        float a = dens * dt * 5.5;
+        col += emis * a * transmit * 1.35;
+        transmit *= exp(-a*0.85); // semi-transparent: the hot inner edge shines through
+        if(transmit < 0.01) break;
       }
     }
-    dir = ndir; pos = npos;
-    if(r > 45.0) break;                                 // escapó al cielo
   }
 
-  if(!captured){ color += starField(normalize(dir)) * transmit; }
+  if(!captured){ col += starField(normalize(dir)) * transmit; }
 
-  color = vec3(1.0) - exp(-color * 1.2);               // tonemap exposición
-  float lum = dot(color, vec3(0.299,0.587,0.114));
-  color = mix(vec3(lum), color, 1.12);                 // saturación leve
-  float vig = smoothstep(1.45,0.30,length(suv));       // viñeta
-  color *= mix(0.84,1.0,vig);
-  gl_FragColor = vec4(color, 1.0);
+  float vig = smoothstep(1.45,0.30,length(suv));
+  col *= mix(0.84,1.0,vig);
+  col *= 1.05; // exposure (ACES tonemap runs in the composer)
+  // pre-tonemap saturation push: keeps blackbody hues alive through ACES
+  float lum = dot(col, vec3(0.2126,0.7152,0.0722));
+  col = max(mix(vec3(lum), col, 1.3), 0.0);
+  gl_FragColor = vec4(col, 1.0);
 }
 `;
 
@@ -138,14 +181,17 @@ export default function BlackHoleHero() {
     try {
       renderer = new THREE.WebGLRenderer({
         canvas,
-        antialias: true,
+        antialias: false, // composer renders to offscreen targets; bloom smooths edges
+        stencil: false,
+        depth: false,
         powerPreference: 'high-performance',
         preserveDrawingBuffer: true, // permite capturar el canvas (screenshots/share)
       });
     } catch {
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    const coarse = window.matchMedia('(pointer: coarse)').matches;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 2));
 
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 1);
@@ -156,9 +202,37 @@ export default function BlackHoleHero() {
       iScroll: { value: 0 },
     };
     const geometry = new THREE.PlaneGeometry(2, 2);
-    const material = new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: FRAG });
+    const material = new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader: VERT,
+      fragmentShader: FRAG,
+      defines: { STEPS: coarse ? 220 : 320 },
+    });
     const quad = new THREE.Mesh(geometry, material);
     scene.add(quad);
+
+    // HDR pipeline: linear radiance from the shader -> bloom -> subtle
+    // chromatic aberration -> ACES filmic -> grain (hides banding in the nebula)
+    const composer = new EffectComposer(renderer, {
+      frameBufferType: THREE.HalfFloatType,
+    });
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new BloomEffect({
+      mipmapBlur: true,
+      intensity: 1.25,
+      radius: 0.72,
+      luminanceThreshold: 0.7,
+      luminanceSmoothing: 0.25,
+    });
+    const aberration = new ChromaticAberrationEffect({
+      offset: new THREE.Vector2(0.0007, 0.0007),
+      radialModulation: true,
+      modulationOffset: 0.35,
+    });
+    const tonemap = new ToneMappingEffect({ mode: ToneMappingMode.ACES_FILMIC });
+    const grain = new NoiseEffect({ premultiply: true, blendFunction: BlendFunction.SCREEN });
+    grain.blendMode.opacity.value = 0.045;
+    composer.addPass(new EffectPass(camera, bloom, aberration, tonemap, grain));
 
     const buf = new THREE.Vector2();
     let lastW = 0,
@@ -169,7 +243,7 @@ export default function BlackHoleHero() {
       if (!w || !h || (w === lastW && h === lastH)) return;
       lastW = w;
       lastH = h;
-      renderer.setSize(w, h, false);
+      composer.setSize(w, h, false);
       renderer.getDrawingBufferSize(buf);
       uniforms.iResolution.value.set(buf.x, buf.y);
     };
@@ -207,12 +281,15 @@ export default function BlackHoleHero() {
     window.addEventListener('deviceorientation', onTilt);
 
     const start = performance.now();
+    let last = start;
     let raf = 0;
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
       if (!visible || document.hidden) return; // skip the expensive render while off-screen/hidden
       resize();
       const t = (now - start) / 1000;
+      const delta = (now - last) / 1000;
+      last = now;
       uniforms.iTime.value = t;
       mx += (tMx - mx) * 0.05;
       my += (tMy - my) * 0.05;
@@ -220,7 +297,7 @@ export default function BlackHoleHero() {
       const hero = document.getElementById('hero');
       const hH = hero ? hero.offsetHeight : window.innerHeight;
       uniforms.iScroll.value = Math.max(0, Math.min(1, window.scrollY / hH));
-      renderer.render(scene, camera);
+      composer.render(delta);
     };
     resize();
     raf = requestAnimationFrame(frame);
@@ -232,6 +309,7 @@ export default function BlackHoleHero() {
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', onMouse);
       window.removeEventListener('deviceorientation', onTilt);
+      composer.dispose();
       geometry.dispose();
       material.dispose();
       renderer.dispose();
